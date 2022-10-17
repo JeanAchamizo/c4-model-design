@@ -12,102 +12,99 @@ namespace c4_model_design
 
         static void RenderModels()
         {
-            const long workspaceId = 77473;
-            const string apiKey = "cad41e01-706e-4c0a-aebe-3a81a49f03ac";
-            const string apiSecret = "0f67f441-4ce1-4c64-94ec-0791dbf73142";
+            const long workspaceId = 77477;
+            const string apiKey = "4099c9d0-46ef-49d0-88b3-9700ab20ea67";
+            const string apiSecret = "2be2395d-d775-4200-aebb-f96004b9fbfd";
 
             StructurizrClient structurizrClient = new StructurizrClient(apiKey, apiSecret);
 
-            Workspace workspace = new Workspace("Software Design & Patterns - C4 Model - Sistema de Monitoreo", "Sistema de Monitoreo del Traslado Aéreo de Vacunas SARS-CoV-2");
+            Workspace workspace = new Workspace("Software Design & Patterns - C4 Model - TakeMeHome", "Allows users to bring products from the US to Peru");
 
             ViewSet viewSet = workspace.Views;
 
             Model model = workspace.Model;
 
             // 1. Diagrama de Contexto
-            SoftwareSystem monitoringSystem = model.AddSoftwareSystem("Monitoreo del Traslado Aéreo de Vacunas SARS-CoV-2", "Permite el seguimiento y monitoreo del traslado aéreo a nuestro país de las vacunas para la COVID-19.");
-            SoftwareSystem googleMaps = model.AddSoftwareSystem("Google Maps", "Plataforma que ofrece una REST API de información geo referencial.");
-            SoftwareSystem aircraftSystem = model.AddSoftwareSystem("Aircraft System", "Permite transmitir información en tiempo real por el avión del vuelo a nuestro sistema");
+            SoftwareSystem ImportItSystem = model.AddSoftwareSystem("ImportIt System", "Allows users to bring.");
+            SoftwareSystem googleMaps = model.AddSoftwareSystem("Google Maps", "Platform that offers a REST API of georeferential information.");
+            SoftwareSystem PaymentSystem = model.AddSoftwareSystem("Payment Gateway System", "Allow the customers to make payments.");
+            SoftwareSystem EmailSystem = model.AddSoftwareSystem("E-mail System", "The internal Microsoft Exchange  e-mail System.");
 
-            Person ciudadano = model.AddPerson("Ciudadano", "Ciudadano peruano.");
-            Person admin = model.AddPerson("Admin", "User Admin.");
+            Person traveler = model.AddPerson("Traveler", "A traveler with a registred account.");
+            Person ImportCustomer = model.AddPerson("Customer", "A web app user with a registred account. ");
 
-            ciudadano.Uses(monitoringSystem, "Realiza consultas para mantenerse al tanto de la planificación de los vuelos hasta la llegada del lote de vacunas al Perú");
-            admin.Uses(monitoringSystem, "Realiza consultas para mantenerse al tanto de la planificación de los vuelos hasta la llegada del lote de vacunas al Perú");
+            traveler.Uses(ImportItSystem, "Search for products to import and offer her services");
+            ImportCustomer.Uses(ImportItSystem, "Search for Tarvelers and select one to contract their services using");
 
-            monitoringSystem.Uses(aircraftSystem, "Consulta información en tiempo real por el avión del vuelo");
-            monitoringSystem.Uses(googleMaps, "Usa la API de google maps");
+            ImportItSystem.Uses(PaymentSystem, "Makes payment using");
+            ImportItSystem.Uses(googleMaps, "Uses the Google API");
+            ImportItSystem.Uses(EmailSystem, "Send e-mail using");
+
+            EmailSystem.Delivers(traveler,"Sends emails to");
+            EmailSystem.Delivers(ImportCustomer, "Sends emails to");
+            
+
 
             // Tags
-            ciudadano.AddTags("Ciudadano");
-            admin.AddTags("Admin");
-            monitoringSystem.AddTags("SistemaMonitoreo");
+            traveler.AddTags("Traveler");
+            ImportCustomer.AddTags("Customer");
+            ImportItSystem.AddTags("SistemaMonitoreo");
             googleMaps.AddTags("GoogleMaps");
-            aircraftSystem.AddTags("AircraftSystem");
+            PaymentSystem.AddTags("PaymentSystem");
 
             Styles styles = viewSet.Configuration.Styles;
-            styles.Add(new ElementStyle("Ciudadano") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
-            styles.Add(new ElementStyle("Admin") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Person });
+            styles.Add(new ElementStyle("Traveler") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
+            styles.Add(new ElementStyle("Customer") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Person });
             styles.Add(new ElementStyle("SistemaMonitoreo") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
             styles.Add(new ElementStyle("GoogleMaps") { Background = "#90714c", Color = "#ffffff", Shape = Shape.RoundedBox });
-            styles.Add(new ElementStyle("AircraftSystem") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
+            styles.Add(new ElementStyle("PaymentSystem") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
             
-            SystemContextView contextView = viewSet.CreateSystemContextView(monitoringSystem, "Contexto", "Diagrama de contexto");
+            SystemContextView contextView = viewSet.CreateSystemContextView(ImportItSystem, "Contexto", "Diagrama de contexto");
             contextView.PaperSize = PaperSize.A4_Landscape;
             contextView.AddAllSoftwareSystems();
             contextView.AddAllPeople();
 
             // 2. Diagrama de Contenedores
             
-            Container mobileApplication = monitoringSystem.AddContainer("Mobile App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "Swift UI");
-            Container webApplication = monitoringSystem.AddContainer("Web App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "React");
-            Container landingPage = monitoringSystem.AddContainer("Landing Page", "", "React");
-            Container apiRest = monitoringSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
-            Container flightPlanningContext = monitoringSystem.AddContainer("Flight Planning Context", "Bounded Context de Planificación de Vuelos", "NodeJS (NestJS)");
-            Container airportContext = monitoringSystem.AddContainer("Airport Context", "Bounded Context de información de Aeropuertos", "NodeJS (NestJS)");
-            Container aircraftInventoryContext = monitoringSystem.AddContainer("Aircraft Inventory Context", "Bounded Context de Inventario de Aviones", "NodeJS (NestJS)");
-            Container vaccinesInventoryContext = monitoringSystem.AddContainer("Vaccines Inventory Context", "Bounded Context de Inventario de Vacunas", "NodeJS (NestJS)");
-            Container monitoringContext = monitoringSystem.AddContainer("Monitoring Context", "Bounded Context de Monitoreo en tiempo real del status y ubicación del vuelo que transporta las vacunas", "NodeJS (NestJS)");
-            Container securityContext = monitoringSystem.AddContainer("Security Context", "Bounded Context de Seguridad", "NodeJS (NestJS)");
+            Container webApplication = ImportItSystem.AddContainer("Web App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "React");
+            Container landingPage = ImportItSystem.AddContainer("Landing Page", "", "React");
+            Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
+            Container loginContext = ImportItSystem.AddContainer("Log In", "Allows customers and travelers to log into the account", "NodeJS (NestJS)");
+            Container reviewContext = ImportItSystem.AddContainer("Review", "Customer rates the Traveler", "NodeJS (NestJS)");
+            Container messageContext = ImportItSystem.AddContainer("Message", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
+            Container SeachProductContext = ImportItSystem.AddContainer("Search Products", "Customer locates order in real time", "NodeJS (NestJS)");
+            Container PayOrderContext = ImportItSystem.AddContainer("Pay Order", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
+                       
+            Container database = ImportItSystem.AddContainer("Database", "", "Oracle");
 
-
-            Container database = monitoringSystem.AddContainer("Database", "", "Oracle");
-
-            Container prueba = monitoringSystem.AddContainer("Prueba1", "Prueba2", "´Prueba C# (C_SHART)");
+            traveler.Uses(webApplication, "Consulta");
+            traveler.Uses(landingPage, "Consulta");
 
             
-            ciudadano.Uses(mobileApplication, "Consulta");
-            ciudadano.Uses(webApplication, "Consulta");
-            ciudadano.Uses(landingPage, "Consulta");
+            ImportCustomer.Uses(webApplication, "Consulta");
+            ImportCustomer.Uses(landingPage, "Consulta");
 
-            admin.Uses(mobileApplication, "Consulta");
-            admin.Uses(webApplication, "Consulta");
-            admin.Uses(landingPage, "Consulta");
-
-            mobileApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
             webApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
 
-            apiRest.Uses(flightPlanningContext, "", "");
-            apiRest.Uses(airportContext, "", "");
-            apiRest.Uses(aircraftInventoryContext, "", "");
-            apiRest.Uses(vaccinesInventoryContext, "", "");
-            apiRest.Uses(monitoringContext, "", "");
-            apiRest.Uses(securityContext, "", "");
+            apiRest.Uses(loginContext, "", "");
+            apiRest.Uses(reviewContext, "", "");
+            apiRest.Uses(messageContext, "", "");
+            apiRest.Uses(SeachProductContext, "", "");
+            apiRest.Uses(PayOrderContext, "", "");
 
-            flightPlanningContext.Uses(database, "", "");
-            airportContext.Uses(database, "", "");
-            aircraftInventoryContext.Uses(database, "", "");
-            vaccinesInventoryContext.Uses(database, "", "");
-            monitoringContext.Uses(database, "", "");
-            securityContext.Uses(database, "", "");
 
-            monitoringContext.Uses(googleMaps, "API Request", "JSON/HTTPS");
-            monitoringContext.Uses(aircraftSystem, "API Request", "JSON/HTTPS");
+            loginContext.Uses(database, "", "");
+            reviewContext.Uses(database, "", "");
+            SeachProductContext.Uses(database, "", "");
+            SeachProductContext.Uses(googleMaps, "API Request", "JSON/HTTPS");
+            messageContext.Uses(database, "", ""); 
+            PayOrderContext.Uses(database, "", "");
+            PayOrderContext.Uses(PaymentSystem, "API Request", "J");
+       
 
             // Tags
-            mobileApplication.AddTags("MobileApp");
             webApplication.AddTags("WebApp");
             landingPage.AddTags("LandingPage");
             apiRest.AddTags("APIRest");
@@ -115,14 +112,12 @@ namespace c4_model_design
 
             string contextTag = "Context";
 
-            flightPlanningContext.AddTags(contextTag);
-            airportContext.AddTags(contextTag);
-            aircraftInventoryContext.AddTags(contextTag);
-            vaccinesInventoryContext.AddTags(contextTag);
-            monitoringContext.AddTags(contextTag);
-            securityContext.AddTags(contextTag);
-
-            prueba.AddTags(contextTag);
+            loginContext.AddTags(contextTag);
+            reviewContext.AddTags(contextTag);
+            messageContext.AddTags(contextTag);
+            SeachProductContext.AddTags(contextTag);
+            PayOrderContext.AddTags(contextTag);
+    
 
             styles.Add(new ElementStyle("MobileApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.MobileDevicePortrait, Icon = "" });
             styles.Add(new ElementStyle("WebApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
@@ -131,72 +126,125 @@ namespace c4_model_design
             styles.Add(new ElementStyle("Database") { Shape = Shape.Cylinder, Background = "#ff0000", Color = "#ffffff", Icon = "" });
             styles.Add(new ElementStyle(contextTag) { Shape = Shape.Hexagon, Background = "#facc2e", Icon = "" });
 
-            ContainerView containerView = viewSet.CreateContainerView(monitoringSystem, "Contenedor", "Diagrama de contenedores");
+            ContainerView containerView = viewSet.CreateContainerView(ImportItSystem, "Contenedor", "Diagrama de contenedores");
             contextView.PaperSize = PaperSize.A4_Landscape;
             containerView.AddAllElements();
 
-            // 3. Diagrama de Componentes (Monitoring Context)
-            Component domainLayer = monitoringContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+            // 3.1 Diagrama de Componentes (PayOrder Context)
 
-            Component monitoringController = monitoringContext.AddComponent("MonitoringController", "REST API endpoints de monitoreo.", "NodeJS (NestJS) REST Controller");
+            Component domainLayer = PayOrderContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
 
-            Component monitoringApplicationService = monitoringContext.AddComponent("MonitoringApplicationService", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
+            Component PaymentController = PayOrderContext.AddComponent("PaymentController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
+            Component OrderPaymentSystem = PayOrderContext.AddComponent("OrderPaymentSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
+            Component PaymentHistoryObserver = PayOrderContext.AddComponent("PaymentHistoryObserver", "Saves the customer's payment history", "NestJS Component");
+            //Component vaccineLoteRepository = PayOrderContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
 
-            Component flightRepository = monitoringContext.AddComponent("FlightRepository", "Información del vuelo", "NestJS Component");
-            Component vaccineLoteRepository = monitoringContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
-            Component locationRepository = monitoringContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");
+            //Component locationRepository = PayOrderContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");
 
-            Component aircraftSystemFacade = monitoringContext.AddComponent("Aircraft System Facade", "", "NestJS Component");
+            Component PaymentSystemFacade = PayOrderContext.AddComponent("Payment System Facade", "", "NestJS Component");
 
-            apiRest.Uses(monitoringController, "", "JSON/HTTPS");
-            monitoringController.Uses(monitoringApplicationService, "Invoca métodos de monitoreo");
+            apiRest.Uses(PaymentController, "", "JSON/HTTPS");
+            PaymentController.Uses(OrderPaymentSystem, "Invoca métodos de monitoreo");
 
-            monitoringApplicationService.Uses(domainLayer, "Usa", "");
-            monitoringApplicationService.Uses(aircraftSystemFacade, "Usa");
-            monitoringApplicationService.Uses(flightRepository, "", "");
-            monitoringApplicationService.Uses(vaccineLoteRepository, "", "");
-            monitoringApplicationService.Uses(locationRepository, "", "");
+            OrderPaymentSystem.Uses(domainLayer, "Uses", "");
+            OrderPaymentSystem.Uses(PaymentSystemFacade, "Uses");
+            OrderPaymentSystem.Uses(PaymentHistoryObserver, "", "");
+            //OrderPaymentSystem.Uses(vaccineLoteRepository, "", "");
+            //OrderPaymentSystem.Uses(locationRepository, "", "");
 
-            flightRepository.Uses(database, "", "");
-            vaccineLoteRepository.Uses(database, "", "");
-            locationRepository.Uses(database, "", "");
+            PaymentHistoryObserver.Uses(database, "", "");
+            //vaccineLoteRepository.Uses(database, "", "");
+            //locationRepository.Uses(database, "", "");
 
-            locationRepository.Uses(googleMaps, "", "JSON/HTTPS");
+           // //locationRepository.Uses(googleMaps, "", "JSON/HTTPS");
 
-            aircraftSystemFacade.Uses(aircraftSystem, "JSON/HTTPS");
+            PaymentSystemFacade.Uses(PaymentSystem, "JSON/HTTPS");
             
             // Tags
             domainLayer.AddTags("DomainLayer");
-            monitoringController.AddTags("MonitoringController");
-            monitoringApplicationService.AddTags("MonitoringApplicationService");
-            flightRepository.AddTags("FlightRepository");
-            vaccineLoteRepository.AddTags("VaccineLoteRepository");
-            locationRepository.AddTags("LocationRepository");
-            aircraftSystemFacade.AddTags("AircraftSystemFacade");
+            PaymentController.AddTags("PaymentController");
+            OrderPaymentSystem.AddTags("OrderPaymentSystem");
+            PaymentHistoryObserver.AddTags("PaymentHistoryObserver");
+            //vaccineLoteRepository.AddTags("VaccineLoteRepository");
+           // locationRepository.AddTags("LocationRepository");
+            PaymentSystemFacade.AddTags("PaymentSystemFacade");
             
             styles.Add(new ElementStyle("DomainLayer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("MonitoringController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("MonitoringApplicationService") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("PaymentController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("OrderPaymentSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("MonitoringDomainModel") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("FlightStatus") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("FlightRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("VaccineLoteRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("LocationRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("AircraftSystemFacade") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("PaymentHistoryObserver") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("PaymentSystemFacade") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
 
-            ComponentView componentView = viewSet.CreateComponentView(monitoringContext, "Components", "Component Diagram");
+            ComponentView componentView = viewSet.CreateComponentView(PayOrderContext, "Components", "Component Diagram");
+
             componentView.PaperSize = PaperSize.A4_Landscape;
-            componentView.Add(mobileApplication);
             componentView.Add(webApplication);
             componentView.Add(apiRest);
             componentView.Add(database);
-            componentView.Add(aircraftSystem);
-            componentView.Add(googleMaps);
+            componentView.Add(PaymentSystem);
+            //componentView.Add(googleMaps);
             componentView.AddAllComponents();
+
+
+
+
+            // 3.2 Diagrama de Componentes (SearchOrder Context)
+
+            domainLayer = SeachProductContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+
+            Component LocationGPSController = SeachProductContext.AddComponent("LocationGPSController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
+            Component SeachProductSystem = SeachProductContext.AddComponent("SeachProductSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
+            Component ProductPlataformRepository = SeachProductContext.AddComponent("Product Platform Repository", "S", "NestJS Component");
+            //Component vaccineLoteRepository = SeachProductContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
+
+            //Component locationRepository = SeachProductContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");
+
+
+            apiRest.Uses(LocationGPSController, "", "JSON/HTTPS");
+
+            SeachProductSystem.Uses(domainLayer, "Uses", "");
+            SeachProductSystem.Uses(PaymentSystemFacade, "Uses");
+            SeachProductSystem.Uses(ProductPlataformRepository, "", "");
+            
+
+            ProductPlataformRepository.Uses(database, "", "");
+
+            LocationGPSController.Uses(googleMaps, "", "JSON/HTTPS");
+            LocationGPSController.Uses(SeachProductSystem, "", "JSON/HTTPS");
+
+            // Tags
+          
+            SeachProductSystem.AddTags("SeachProductSystem");
+            ProductPlataformRepository.AddTags("ProductPlataformRepository");
+            LocationGPSController.AddTags("LocationGPSController");
+            domainLayer.AddTags("domainLayer");
+       
+          
+            styles.Add(new ElementStyle("LocationGPSController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("SeachProductSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("ProductPlataformRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("domainLayer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            
+
+            ComponentView componentView1 = viewSet.CreateComponentView(SeachProductContext, "Components1", "Component Diagram1");
+
+            componentView1.PaperSize = PaperSize.A4_Landscape;
+            componentView1.Add(webApplication);
+            componentView1.Add(apiRest);
+            componentView1.Add(database);
+            componentView1.Add(googleMaps);
+            componentView1.AddAllComponents();
+
 
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
         }
+
+
+
+
 
     }
 }

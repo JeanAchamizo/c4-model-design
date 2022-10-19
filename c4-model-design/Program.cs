@@ -76,8 +76,8 @@ namespace c4_model_design
             Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
             Container loginContext = ImportItSystem.AddContainer("Identity", "Allows customers, travelers and administrators to log in and log out of the account", "NodeJS (NestJS)");
-            Container reviewContext = ImportItSystem.AddContainer("Review", "Customer rates the Traveler", "NodeJS (NestJS)");
-            Container messageContext = ImportItSystem.AddContainer("Message", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
+            Container reviewContext = ImportItSystem.AddContainer("Reviews", "Customer rates the Traveler", "NodeJS (NestJS)");
+            Container messageContext = ImportItSystem.AddContainer("Messages", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
             Container SeachProductContext = ImportItSystem.AddContainer("Products", "Allows customers to view the product details like locating them in real time", "NodeJS (NestJS)");
             Container PayOrderContext = ImportItSystem.AddContainer("Payments", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
                        

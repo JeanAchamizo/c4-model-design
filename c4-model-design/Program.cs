@@ -1,5 +1,6 @@
 ﻿using Structurizr;
 using Structurizr.Api;
+using System;
 
 namespace c4_model_design
 {
@@ -12,6 +13,7 @@ namespace c4_model_design
 
         static void RenderModels()
         {
+            
             const long workspaceId = 77477;
             const string apiKey = "4099c9d0-46ef-49d0-88b3-9700ab20ea67";
             const string apiSecret = "2be2395d-d775-4200-aebb-f96004b9fbfd";
@@ -24,14 +26,15 @@ namespace c4_model_design
 
             Model model = workspace.Model;
 
+            Person traveler = model.AddPerson("Traveler", "A traveler with a registred account.");
+            Person ImportCustomer = model.AddPerson("Customer", "A web app user with a registred account. ");
+            Person admin = model.AddPerson("Administrator", "A web app administrator");
+
             // 1. Diagrama de Contexto
             SoftwareSystem ImportItSystem = model.AddSoftwareSystem("ImportIt System", "Allows users to bring.");
             SoftwareSystem googleMaps = model.AddSoftwareSystem("Google Maps", "Platform that offers a REST API of georeferential information.");
             SoftwareSystem PaymentSystem = model.AddSoftwareSystem("Payment Gateway System", "Allow the customers to make payments.");
             SoftwareSystem EmailSystem = model.AddSoftwareSystem("E-mail System", "The internal Microsoft Exchange  e-mail System.");
-
-            Person traveler = model.AddPerson("Traveler", "A traveler with a registred account.");
-            Person ImportCustomer = model.AddPerson("Customer", "A web app user with a registred account. ");
 
             traveler.Uses(ImportItSystem, "Search for products to import and offer her services");
             ImportCustomer.Uses(ImportItSystem, "Search for Tarvelers and select one to contract their services using");
@@ -42,12 +45,12 @@ namespace c4_model_design
 
             EmailSystem.Delivers(traveler,"Sends emails to");
             EmailSystem.Delivers(ImportCustomer, "Sends emails to");
+            EmailSystem.Delivers(admin, "Sends emails to");
             
-
-
             // Tags
             traveler.AddTags("Traveler");
             ImportCustomer.AddTags("Customer");
+            admin.AddTags("Admin");
             ImportItSystem.AddTags("SistemaMonitoreo");
             googleMaps.AddTags("GoogleMaps");
             PaymentSystem.AddTags("PaymentSystem");
@@ -55,6 +58,7 @@ namespace c4_model_design
             Styles styles = viewSet.Configuration.Styles;
             styles.Add(new ElementStyle("Traveler") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
             styles.Add(new ElementStyle("Customer") { Background = "#aa60af", Color = "#ffffff", Shape = Shape.Person });
+            styles.Add(new ElementStyle("Admin") { Background = "#0a60ff", Color = "#ffffff", Shape = Shape.Person });
             styles.Add(new ElementStyle("SistemaMonitoreo") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
             styles.Add(new ElementStyle("GoogleMaps") { Background = "#90714c", Color = "#ffffff", Shape = Shape.RoundedBox });
             styles.Add(new ElementStyle("PaymentSystem") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
@@ -71,20 +75,22 @@ namespace c4_model_design
             Container landingPage = ImportItSystem.AddContainer("Landing Page", "", "React");
             Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
-            Container loginContext = ImportItSystem.AddContainer("Log In", "Allows customers and travelers to log into the account", "NodeJS (NestJS)");
+            Container loginContext = ImportItSystem.AddContainer("Accounts", "Allows customers, travelers and administrators to log in and log out of the account", "NodeJS (NestJS)");
             Container reviewContext = ImportItSystem.AddContainer("Review", "Customer rates the Traveler", "NodeJS (NestJS)");
             Container messageContext = ImportItSystem.AddContainer("Message", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
-            Container SeachProductContext = ImportItSystem.AddContainer("Search Products", "Customer locates order in real time", "NodeJS (NestJS)");
-            Container PayOrderContext = ImportItSystem.AddContainer("Pay Order", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
+            Container SeachProductContext = ImportItSystem.AddContainer("Products", "Allows customers to view the product details like locating them in real time", "NodeJS (NestJS)");
+            Container PayOrderContext = ImportItSystem.AddContainer("Payments", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
                        
             Container database = ImportItSystem.AddContainer("Database", "", "Oracle");
 
             traveler.Uses(webApplication, "Consulta");
             traveler.Uses(landingPage, "Consulta");
-
             
             ImportCustomer.Uses(webApplication, "Consulta");
             ImportCustomer.Uses(landingPage, "Consulta");
+
+            admin.Uses(webApplication, "Consulta");
+            admin.Uses(landingPage, "Consulta");
 
             webApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
 
@@ -196,7 +202,7 @@ namespace c4_model_design
 
             Component LocationGPSController = SeachProductContext.AddComponent("LocationGPSController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
             Component SeachProductSystem = SeachProductContext.AddComponent("SeachProductSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
-            Component ProductPlataformRepository = SeachProductContext.AddComponent("Product Platform Repository", "S", "NestJS Component");
+            Component ProductPlataformRepository = SeachProductContext.AddComponent("Product Platform Repository", "Save", "NestJS Component");
             //Component vaccineLoteRepository = SeachProductContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
 
             //Component locationRepository = SeachProductContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");

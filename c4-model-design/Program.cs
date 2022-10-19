@@ -71,7 +71,7 @@ namespace c4_model_design
             // 2. Diagrama de Contenedores
             
 
-            Container webApplication = ImportItSystem.AddContainer("Web App", "Permite a los usuarios visualizar un dashboard con el resumen de toda la información del traslado de los lotes de vacunas.", "React");
+            Container webApplication = ImportItSystem.AddContainer("Web App", "Allows users to view a dashboard with a summary of all product information.", "React");
             Container landingPage = ImportItSystem.AddContainer("Landing Page", "", "React");
             Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 

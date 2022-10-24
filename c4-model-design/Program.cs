@@ -14,9 +14,9 @@ namespace c4_model_design
         static void RenderModels()
         {
             
-            const long workspaceId = 77477;
-            const string apiKey = "4099c9d0-46ef-49d0-88b3-9700ab20ea67";
-            const string apiSecret = "2be2395d-d775-4200-aebb-f96004b9fbfd";
+            const long workspaceId = 77473;
+            const string apiKey = "cad41e01-706e-4c0a-aebe-3a81a49f03ac";
+            const string apiSecret = "0f67f441-4ce1-4c64-94ec-0791dbf73142";
 
             StructurizrClient structurizrClient = new StructurizrClient(apiKey, apiSecret);
 
@@ -72,6 +72,7 @@ namespace c4_model_design
             
 
             Container webApplication = ImportItSystem.AddContainer("Web App", "Allows users to view a dashboard with a summary of all product information.", "React");
+            Container mobileApplication = ImportItSystem.AddContainer("mobile App", "Allows users to view a dashboard with a summary of all product information.", "React");
             Container landingPage = ImportItSystem.AddContainer("Landing Page", "", "React");
             Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
@@ -84,15 +85,19 @@ namespace c4_model_design
             Container database = ImportItSystem.AddContainer("Database", "", "Oracle");
 
             traveler.Uses(webApplication, "Consulta");
+            traveler.Uses(mobileApplication, "Consulta");
             traveler.Uses(landingPage, "Consulta");
             
             ImportCustomer.Uses(webApplication, "Consulta");
+            ImportCustomer.Uses(mobileApplication, "Consulta");
             ImportCustomer.Uses(landingPage, "Consulta");
 
             admin.Uses(webApplication, "Consulta");
+            admin.Uses(mobileApplication, "Consulta");
             admin.Uses(landingPage, "Consulta");
 
             webApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
+            mobileApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
 
             apiRest.Uses(loginContext, "", "");
             apiRest.Uses(reviewContext, "", "");
@@ -189,8 +194,8 @@ namespace c4_model_design
             componentView.Add(webApplication);
             componentView.Add(apiRest);
             componentView.Add(database);
-            componentView.Add(PaymentSystem);
-            //componentView.Add(googleMaps);
+            //componentView.Add(PaymentSystem);
+            componentView.Add(mobileApplication);
             componentView.AddAllComponents();
 
 

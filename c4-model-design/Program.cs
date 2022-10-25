@@ -249,6 +249,70 @@ namespace c4_model_design
             componentView1.AddAllComponents();
 
 
+
+            // 3.3 Diagrama de Componentes (Message Context)
+
+            domainLayer = messageContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+
+            Component messageController = messageContext.AddComponent("messageController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
+            Component messageSystem = messageContext.AddComponent("messageSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
+            Component messageFacade = messageContext.AddComponent("messageFacade", "Saves the customer's payment history", "NestJS Component");
+            //Component vaccineLoteRepository = messageContext.AddComponent("VaccineLoteRepository", "Información de lote de vacunas", "NestJS Component");
+
+            //Component locationRepository = messageContext.AddComponent("LocationRepository", "Ubicación del vuelo", "NestJS Component");
+
+            Component componente1 = messageContext.AddComponent("Payment System Facade", "", "NestJS Component");
+
+            apiRest.Uses(messageController, "", "JSON/HTTPS");
+            messageController.Uses(messageSystem, "Invoca métodos de monitoreo");
+
+            messageSystem.Uses(domainLayer, "Uses", "");
+            messageSystem.Uses(componente1, "Uses");
+            messageSystem.Uses(messageFacade, "", "");
+            //messageSystem.Uses(vaccineLoteRepository, "", "");
+            //messageSystem.Uses(locationRepository, "", "");
+
+            messageFacade.Uses(database, "", "");
+            //vaccineLoteRepository.Uses(database, "", "");
+            //locationRepository.Uses(database, "", "");
+
+            // //locationRepository.Uses(googleMaps, "", "JSON/HTTPS");
+
+            componente1.Uses(PaymentSystem, "JSON/HTTPS");
+
+            // Tags
+            domainLayer.AddTags("DomainLayer");
+            messageController.AddTags("messageController");
+            messageSystem.AddTags("messageSystem");
+            messageFacade.AddTags("messageFacade");
+            //vaccineLoteRepository.AddTags("VaccineLoteRepository");
+            // locationRepository.AddTags("LocationRepository");
+            componente1.AddTags("componente1");
+
+            
+            styles.Add(new ElementStyle("messageController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("messageSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("messageFacade") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("componente1") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+
+            ComponentView componentView2 = viewSet.CreateComponentView(messageContext, "Components2", "Component Diagram");
+
+            componentView2.PaperSize = PaperSize.A4_Landscape;
+            componentView2.Add(webApplication);
+            componentView2.Add(apiRest);
+            componentView2.Add(database);
+            //componentView2.Add(PaymentSystem);
+            componentView2.Add(mobileApplication);
+            componentView2.AddAllComponents();
+
+
+
+
+
+
+
+
+            //------------------------------------------------------------
             structurizrClient.UnlockWorkspace(workspaceId);
             structurizrClient.PutWorkspace(workspaceId, workspace);
         }

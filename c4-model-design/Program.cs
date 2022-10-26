@@ -13,7 +13,7 @@ namespace c4_model_design
 
         static void RenderModels()
         {
-            
+
             const long workspaceId = 77473;
             const string apiKey = "cad41e01-706e-4c0a-aebe-3a81a49f03ac";
             const string apiSecret = "0f67f441-4ce1-4c64-94ec-0791dbf73142";
@@ -32,7 +32,7 @@ namespace c4_model_design
 
             // 1. Diagrama de Contexto
             SoftwareSystem ImportItSystem = model.AddSoftwareSystem("ImportIt System", "Allows users to bring.");
-            SoftwareSystem googleMaps = model.AddSoftwareSystem("Google Maps", "Platform that offers a REST API of georeferential information.");
+            SoftwareSystem gpsSystem = model.AddSoftwareSystem("GPS System", "Platform that offers a REST API of georeferential information.");
             SoftwareSystem PaymentSystem = model.AddSoftwareSystem("Payment Gateway System", "Allow the customers to make payments.");
             SoftwareSystem EmailSystem = model.AddSoftwareSystem("E-mail System", "The internal Microsoft Exchange  e-mail System.");
 
@@ -40,19 +40,19 @@ namespace c4_model_design
             ImportCustomer.Uses(ImportItSystem, "Search for Tarvelers and select one to contract their services using");
 
             ImportItSystem.Uses(PaymentSystem, "Makes payment using");
-            ImportItSystem.Uses(googleMaps, "Uses the Google API");
+            ImportItSystem.Uses(gpsSystem, "Uses the Google API");
             ImportItSystem.Uses(EmailSystem, "Send e-mail using");
 
-            EmailSystem.Delivers(traveler,"Sends emails to");
+            EmailSystem.Delivers(traveler, "Sends emails to");
             EmailSystem.Delivers(ImportCustomer, "Sends emails to");
             EmailSystem.Delivers(admin, "Sends emails to");
-            
+
             // Tags
             traveler.AddTags("Traveler");
             ImportCustomer.AddTags("Customer");
             admin.AddTags("Admin");
             ImportItSystem.AddTags("SistemaMonitoreo");
-            googleMaps.AddTags("GoogleMaps");
+            gpsSystem.AddTags("GoogleMaps");
             PaymentSystem.AddTags("PaymentSystem");
 
             Styles styles = viewSet.Configuration.Styles;
@@ -62,32 +62,32 @@ namespace c4_model_design
             styles.Add(new ElementStyle("SistemaMonitoreo") { Background = "#008f39", Color = "#ffffff", Shape = Shape.RoundedBox });
             styles.Add(new ElementStyle("GoogleMaps") { Background = "#90714c", Color = "#ffffff", Shape = Shape.RoundedBox });
             styles.Add(new ElementStyle("PaymentSystem") { Background = "#2f95c7", Color = "#ffffff", Shape = Shape.RoundedBox });
-            
+
             SystemContextView contextView = viewSet.CreateSystemContextView(ImportItSystem, "Contexto", "Diagrama de contexto");
             contextView.PaperSize = PaperSize.A4_Landscape;
             contextView.AddAllSoftwareSystems();
             contextView.AddAllPeople();
 
             // 2. Diagrama de Contenedores
-            
+
 
             Container webApplication = ImportItSystem.AddContainer("Web App", "Allows users to view a dashboard with a summary of all product information.", "React");
             Container mobileApplication = ImportItSystem.AddContainer("mobile App", "Allows users to view a dashboard with a summary of all product information.", "React");
             Container landingPage = ImportItSystem.AddContainer("Landing Page", "", "React");
             Container apiRest = ImportItSystem.AddContainer("API REST", "API Rest", "NodeJS (NestJS) port 8080");
 
-            Container authenticationContext = ImportItSystem.AddContainer("Identity", "Allows customers, travelers and administrators to log in and log out of the account. It also handles history and permissions.", "NodeJS (NestJS)");
+            Container identityContext = ImportItSystem.AddContainer("identity", "Allows customers, travelers and administrators to log in and log out of the account. It also handles history and permissions.", "NodeJS (NestJS)");
             Container reviewContext = ImportItSystem.AddContainer("Reviews", "Customer rates the Traveler", "NodeJS (NestJS)");
             Container messageContext = ImportItSystem.AddContainer("Messages", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
             Container ProductsContext = ImportItSystem.AddContainer("Products", "Allows customers to view the product details like locating them in real time", "NodeJS (NestJS)");
             Container PayOrderContext = ImportItSystem.AddContainer("Payments", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
-                       
+
             Container database = ImportItSystem.AddContainer("Database", "", "Oracle");
 
             traveler.Uses(webApplication, "Consulta");
             traveler.Uses(mobileApplication, "Consulta");
             traveler.Uses(landingPage, "Consulta");
-            
+
             ImportCustomer.Uses(webApplication, "Consulta");
             ImportCustomer.Uses(mobileApplication, "Consulta");
             ImportCustomer.Uses(landingPage, "Consulta");
@@ -99,21 +99,21 @@ namespace c4_model_design
             webApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
             mobileApplication.Uses(apiRest, "API Request", "JSON/HTTPS");
 
-            apiRest.Uses(authenticationContext, "", "");
+            apiRest.Uses(identityContext, "", "");
             apiRest.Uses(reviewContext, "", "");
             apiRest.Uses(messageContext, "", "");
             apiRest.Uses(ProductsContext, "", "");
             apiRest.Uses(PayOrderContext, "", "");
 
 
-            authenticationContext.Uses(database, "", "");
+            identityContext.Uses(database, "", "");
             reviewContext.Uses(database, "", "");
             ProductsContext.Uses(database, "", "");
-            ProductsContext.Uses(googleMaps, "API Request", "JSON/HTTPS");
-            messageContext.Uses(database, "", ""); 
+            ProductsContext.Uses(gpsSystem, "API Request", "JSON/HTTPS");
+            messageContext.Uses(database, "", "");
             PayOrderContext.Uses(database, "", "");
             PayOrderContext.Uses(PaymentSystem, "API Request", "J");
-       
+
 
             // Tags
             webApplication.AddTags("WebApp");
@@ -123,12 +123,12 @@ namespace c4_model_design
 
             string contextTag = "Context";
 
-            authenticationContext.AddTags(contextTag);
+            identityContext.AddTags(contextTag);
             reviewContext.AddTags(contextTag);
             messageContext.AddTags(contextTag);
             ProductsContext.AddTags(contextTag);
             PayOrderContext.AddTags(contextTag);
-    
+
 
             styles.Add(new ElementStyle("MobileApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.MobileDevicePortrait, Icon = "" });
             styles.Add(new ElementStyle("WebApp") { Background = "#9d33d6", Color = "#ffffff", Shape = Shape.WebBrowser, Icon = "" });
@@ -143,7 +143,7 @@ namespace c4_model_design
 
             // 3.1 Diagrama de Componentes (PayOrder Context)
 
-            Component domainLayer;// = PayOrderContext.AddComponent("Domain Layer", "", "NodeJS (NestJS)");
+
             Component PaymentController = PayOrderContext.AddComponent("PaymentController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
             Component OrderPaymentSystem = PayOrderContext.AddComponent("OrderPaymentSystem", "", "NestJS Component");
             Component PaymentHistoryObserver = PayOrderContext.AddComponent("PaymentHistoryObserver", "Saves the customer's payment history", "NestJS Component");
@@ -151,32 +151,32 @@ namespace c4_model_design
             Component PaymentExternaLogic = PayOrderContext.AddComponent("PaymentExternaLogic", "", "NestJS Component");
             Component paymentAplicationServer = PayOrderContext.AddComponent("paymentAplicationServer", "", "NestJS Component");
 
-            
+
             apiRest.Uses(PaymentController, "", "JSON/HTTPS");
             PaymentController.Uses(OrderPaymentSystem, "Invoca métodos de monitoreo");
 
             OrderPaymentSystem.Uses(PaymentPlataform, "Uses", "");
             OrderPaymentSystem.Uses(PaymentExternaLogic, "Uses", "");
-            
+
             paymentAplicationServer.Uses(PaymentSystem, "", "");
 
-            PaymentExternaLogic.Uses(paymentAplicationServer,"Uses","");
-            PaymentExternaLogic.Uses(PaymentHistoryObserver,"Uses","");
+            PaymentExternaLogic.Uses(paymentAplicationServer, "Uses", "");
+            PaymentExternaLogic.Uses(PaymentHistoryObserver, "Uses", "");
 
-            PaymentPlataform.Uses(database,"","");
+            PaymentPlataform.Uses(database, "", "");
 
-            PaymentHistoryObserver.Uses(PaymentPlataform,"","");
+            PaymentHistoryObserver.Uses(PaymentPlataform, "", "");
 
             // Tags
-           
+
             PaymentController.AddTags("PaymentController");
             OrderPaymentSystem.AddTags("OrderPaymentSystem");
             PaymentHistoryObserver.AddTags("PaymentHistoryObserver");
             PaymentPlataform.AddTags("PaymentPlataform");
             PaymentExternaLogic.AddTags("PaymentExternaLogic");
             paymentAplicationServer.AddTags("paymentAplicationServer");
-            
-            
+
+
             styles.Add(new ElementStyle("PaymentController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("OrderPaymentSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("PaymentHistoryObserver") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
@@ -211,14 +211,14 @@ namespace c4_model_design
 
             apiRest.Uses(productController, "", "JSON/HTTPS");
 
-          
+
             SeachProductSystem.Uses(aplicationServer, "Uses");
             SeachProductSystem.Uses(ProductPlataformRepository, "Uses", "");
             SeachProductSystem.Uses(ProductPlataformRepository, "Uses", "");
-            
+
             aplicationServer.Uses(ProductPlataformRepository, "Uses", "");
-            aplicationServer.Uses(googleMaps, "Uses", "");
-            
+            aplicationServer.Uses(gpsSystem, "Uses", "");
+
 
             ProductPlataformRepository.Uses(database, "", "");
 
@@ -226,27 +226,27 @@ namespace c4_model_design
             productController.Uses(embeddebValue, "", "JSON/HTTPS");
             productController.Uses(OrderProduct, "", "JSON/HTTPS");
 
-            embeddebValue.Uses(ProductPlataformRepository,"","");
+            embeddebValue.Uses(ProductPlataformRepository, "", "");
 
-            OrderProduct.Uses(ProductPlataformRepository,"","");
+            OrderProduct.Uses(ProductPlataformRepository, "", "");
             // Tags
-          
+
             SeachProductSystem.AddTags("SeachProductSystem");
             ProductPlataformRepository.AddTags("ProductPlataformRepository");
             productController.AddTags("productController");
             aplicationServer.AddTags("aplicationServer");
             embeddebValue.AddTags("EmbeddedValue");
             OrderProduct.AddTags("OrderProduct");
-           
-       
-          
+
+
+
             styles.Add(new ElementStyle("productController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("SeachProductSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("ProductPlataformRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("aplicationServer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("EmbeddedValue") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("OrderProduct") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            
+
 
             ComponentView componentView1 = viewSet.CreateComponentView(ProductsContext, "Components1", "Component Diagram1");
 
@@ -255,7 +255,7 @@ namespace c4_model_design
             componentView1.Add(mobileApplication);
             componentView1.Add(apiRest);
             componentView1.Add(database);
-            componentView1.Add(googleMaps);
+            componentView1.Add(gpsSystem);
             componentView1.AddAllComponents();
 
 
@@ -270,7 +270,7 @@ namespace c4_model_design
             Component messageRepository = messageContext.AddComponent("messageRepository", "", "NestJS Component");
 
             Component messageDeppendingMappin = messageContext.AddComponent("messageDeppendingMappin", "", "NestJS Component");
-           
+
 
             apiRest.Uses(messageController, "", "JSON/HTTPS");
 
@@ -279,15 +279,15 @@ namespace c4_model_design
             messageSystem.Uses(messageFacade, "", "");
             messageRepository.Uses(database, "", "");
 
-            messageFacade.Uses(messageAplicationServer,"","");
+            messageFacade.Uses(messageAplicationServer, "", "");
             messageFacade.Uses(messageDeppendingMappin, "", "");
 
-            messageAplicationServer.Uses(EmailSystem,"","");
+            messageAplicationServer.Uses(EmailSystem, "", "");
 
-            messageDeppendingMappin.Uses(messageRepository,"","");
+            messageDeppendingMappin.Uses(messageRepository, "", "");
 
             // Tags
-            
+
             messageController.AddTags("messageController");
             messageSystem.AddTags("messageSystem");
             messageFacade.AddTags("messageFacade");
@@ -295,7 +295,7 @@ namespace c4_model_design
             messageAplicationServer.AddTags("messageAplicationServer");
             messageDeppendingMappin.AddTags("messageDeppendingMappin");
 
-            
+
             styles.Add(new ElementStyle("messageController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("messageSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("messageFacade") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
@@ -322,17 +322,17 @@ namespace c4_model_design
             Component reviewQualifyTraveler = reviewContext.AddComponent("reviewQualifyTraveler", "Saves the traveler's qualification", "NestJS Component");
             Component reviewAssociationTableMapping = reviewContext.AddComponent("reviewAssociationTableMapping", "mapping the traveler's qualification", "NestJS Component");
             Component reviewRepository = reviewContext.AddComponent("reviewRepository", "datas the traveler's", "NestJS Component");
-           
+
             apiRest.Uses(reviewController, "", "JSON/HTTPS");
             reviewController.Uses(rewiewSystem, "");
 
             rewiewSystem.Uses(reviewQualifyTraveler, "", "");
-            
+
 
             reviewQualifyTraveler.Uses(reviewAssociationTableMapping, "", "");
             reviewAssociationTableMapping.Uses(reviewRepository, "", "");
 
-            reviewRepository.Uses(database,"","");
+            reviewRepository.Uses(database, "", "");
 
             // Tags
             reviewController.AddTags("reviewController");
@@ -361,62 +361,62 @@ namespace c4_model_design
             // 3.5 Diagrama de Componentes (Authentication Context)
 
 
-            Component authenticationController = authenticationContext.AddComponent("authenticationController", "Controla las cuentas de los usuarios", "NodeJS (NestJS) REST Controller");
-            Component authenticationSystem = authenticationContext.AddComponent("authenticationSystem", "-", "NestJS Component");
-            Component authenticationSignUp = authenticationContext.AddComponent("SignUp", "Crear cuenta", "NestJS Component");
-            Component authenticationLogin = authenticationContext.AddComponent("Login", "-", "NestJS Component");
-            Component authenticationModifyData = authenticationContext.AddComponent("Modify data", "Modifica los datos de los users", "NestJS Component");
-            Component authenticationconcreteTable = authenticationContext.AddComponent("concreteTable", "Mappea los datos de los usuarios", "NestJS Component");
-            Component authenticationRepository = authenticationContext.AddComponent("authenticationRepository", "Repositorio", "NestJS Component");
-            Component authenticationServer = authenticationContext.AddComponent("authenticationServer", "-", "NestJS    Component");
+            Component identityController = identityContext.AddComponent("identityController", "Controla las cuentas de los usuarios", "NodeJS (NestJS) REST Controller");
+            Component identitySystem = identityContext.AddComponent("identitySystem", "-", "NestJS Component");
+            Component identitySignUp = identityContext.AddComponent("SignUp", "Crear cuenta", "NestJS Component");
+            Component identityLogin = identityContext.AddComponent("Login", "-", "NestJS Component");
+            Component identityModifyData = identityContext.AddComponent("Modify data", "Modifica los datos de los users", "NestJS Component");
+            Component identityconcreteTable = identityContext.AddComponent("concreteTable", "Mappea los datos de los usuarios", "NestJS Component");
+            Component identityRepository = identityContext.AddComponent("identityRepository", "Repositorio", "NestJS Component");
+            Component identityServer = identityContext.AddComponent("identityServer", "-", "NestJS    Component");
 
 
 
-            apiRest.Uses(authenticationController, "", "JSON/HTTPS");
-            authenticationController.Uses(authenticationSystem, "Invoca métodos de monitoreo");
+            apiRest.Uses(identityController, "", "JSON/HTTPS");
+            identityController.Uses(identitySystem, "Invoca métodos de monitoreo");
 
-            
-            authenticationSystem.Uses(authenticationLogin, "Uses");
-            authenticationSystem.Uses(authenticationSignUp, "", "Uses");
-            authenticationSystem.Uses(authenticationModifyData, "", "Uses");
-            authenticationSystem.Uses(authenticationServer, "", "Uses");
-            authenticationSystem.Uses(authenticationRepository, "", "Uses");
-          
 
-            authenticationModifyData.Uses(authenticationServer,"Valida y configura metodo de pago","Uses");
-            authenticationModifyData.Uses(authenticationRepository,"","Uses");
+            identitySystem.Uses(identityLogin, "Uses");
+            identitySystem.Uses(identitySignUp, "", "Uses");
+            identitySystem.Uses(identityModifyData, "", "Uses");
+            identitySystem.Uses(identityServer, "", "Uses");
+            identitySystem.Uses(identityRepository, "", "Uses");
 
-            authenticationSignUp.Uses(authenticationconcreteTable,"","");
 
-            authenticationServer.Uses(PaymentSystem,"","");
+            identityModifyData.Uses(identityServer, "Valida y configura metodo de pago", "Uses");
+            identityModifyData.Uses(identityRepository, "", "Uses");
 
-            authenticationconcreteTable.Uses(authenticationRepository,"","");
+            identitySignUp.Uses(identityconcreteTable, "", "");
 
-            authenticationRepository.Uses(database,"","");
+            identityServer.Uses(PaymentSystem, "", "");
+
+            identityconcreteTable.Uses(identityRepository, "", "");
+
+            identityRepository.Uses(database, "", "");
 
 
             // Tags
-            authenticationController.AddTags("authenticationController");
-            authenticationSystem.AddTags("authenticationSystem");
-            authenticationSignUp.AddTags("authenticationSignUp");
-            authenticationLogin.AddTags("authenticationLogin");
-            authenticationModifyData.AddTags("authenticationModifyData");
-            authenticationconcreteTable.AddTags("authenticationconcreteTable");
-            authenticationRepository.AddTags("authenticationRepository");
-            authenticationServer.AddTags("authenticationServer");
+            identityController.AddTags("identityController");
+            identitySystem.AddTags("identitySystem");
+            identitySignUp.AddTags("identitySignUp");
+            identityLogin.AddTags("identityLogin");
+            identityModifyData.AddTags("identityModifyData");
+            identityconcreteTable.AddTags("identityconcreteTable");
+            identityRepository.AddTags("identityRepository");
+            identityServer.AddTags("identityServer");
 
 
-            styles.Add(new ElementStyle("authenticationController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationSignUp") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationLogin") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationModifyData") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationconcreteTable") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("authenticationServer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identitySystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identitySignUp") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityLogin") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityModifyData") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityconcreteTable") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("identityServer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
 
 
-            ComponentView componentView4 = viewSet.CreateComponentView(authenticationContext, "Components4", "Component Diagram");
+            ComponentView componentView4 = viewSet.CreateComponentView(identityContext, "Components4", "Component Diagram");
 
             componentView4.PaperSize = PaperSize.A4_Landscape;
             componentView4.Add(webApplication);

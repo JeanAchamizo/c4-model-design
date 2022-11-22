@@ -79,7 +79,7 @@ namespace c4_model_design
             Container identityContext = ImportItSystem.AddContainer("identity", "Allows customers, travelers and administrators to log in and log out of the account. It also handles history and permissions.", "NodeJS (NestJS)");
             Container reviewContext = ImportItSystem.AddContainer("Reviews", "Customer rates the Traveler", "NodeJS (NestJS)");
             Container messageContext = ImportItSystem.AddContainer("Messages", "Allows communication betweeen customers and travelers", "NodeJS (NestJS)");
-            Container ProductsContext = ImportItSystem.AddContainer("Products", "Allows customers to view the product details like locating them in real time", "NodeJS (NestJS)");
+            Container OrdersContext = ImportItSystem.AddContainer("Orders", "Allows customers to view the product details like locating them in real time", "NodeJS (NestJS)");
             Container PayOrderContext = ImportItSystem.AddContainer("Payments", "Allow customers to pay for pending orders", "JNodeJS (NestJS)");
 
             Container database = ImportItSystem.AddContainer("Database", "", "Oracle");
@@ -102,14 +102,14 @@ namespace c4_model_design
             apiRest.Uses(identityContext, "", "");
             apiRest.Uses(reviewContext, "", "");
             apiRest.Uses(messageContext, "", "");
-            apiRest.Uses(ProductsContext, "", "");
+            apiRest.Uses(OrdersContext, "", "");
             apiRest.Uses(PayOrderContext, "", "");
 
 
             identityContext.Uses(database, "", "");
             reviewContext.Uses(database, "", "");
-            ProductsContext.Uses(database, "", "");
-            ProductsContext.Uses(gpsSystem, "API Request", "JSON/HTTPS");
+            OrdersContext.Uses(database, "", "");
+            OrdersContext.Uses(gpsSystem, "API Request", "JSON/HTTPS");
             messageContext.Uses(database, "", "");
             PayOrderContext.Uses(database, "", "");
             PayOrderContext.Uses(PaymentSystem, "API Request", "J");
@@ -126,7 +126,7 @@ namespace c4_model_design
             identityContext.AddTags(contextTag);
             reviewContext.AddTags(contextTag);
             messageContext.AddTags(contextTag);
-            ProductsContext.AddTags(contextTag);
+            OrdersContext.AddTags(contextTag);
             PayOrderContext.AddTags(contextTag);
 
 
@@ -197,14 +197,14 @@ namespace c4_model_design
 
 
 
-            // 3.2 Diagrama de Componentes (Product Context)
+            // 3.2 Diagrama de Componentes (Order Context)
 
-            Component productController = ProductsContext.AddComponent("productController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
-            Component SeachProductSystem = ProductsContext.AddComponent("SeachProductSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
-            Component ProductPlataformRepository = ProductsContext.AddComponent("Product Platform Repository", "Save", "NestJS Component");
-            Component aplicationServer = ProductsContext.AddComponent("aplicationServer", "", "");
-            Component embeddebValue = ProductsContext.AddComponent("Embedded Value", "mapea las caracteristicas del producto", "NestJS Component");
-            Component OrderProduct = ProductsContext.AddComponent("OrderProduct", "mapea los objetos valores del producto", "NestJS Component");
+            Component productController = OrdersContext.AddComponent("productController", "Controls all transactions", "NodeJS (NestJS) REST Controller");
+            Component SeachOrderSystem = OrdersContext.AddComponent("SeachOrderSystem", "Provee métodos para el monitoreo, pertenece a la capa Application de DDD", "NestJS Component");
+            Component OrderPlataformRepository = OrdersContext.AddComponent("Order Platform Repository", "Save", "NestJS Component");
+            Component aplicationServer = OrdersContext.AddComponent("aplicationServer", "", "");
+            Component embeddebValue = OrdersContext.AddComponent("Embedded Value", "mapea las caracteristicas del producto", "NestJS Component");
+            Component OrderOrder = OrdersContext.AddComponent("OrderProduct", "mapea los objetos valores del producto", "NestJS Component");
 
 
 
@@ -212,43 +212,43 @@ namespace c4_model_design
             apiRest.Uses(productController, "", "JSON/HTTPS");
 
 
-            SeachProductSystem.Uses(aplicationServer, "Uses");
-            SeachProductSystem.Uses(ProductPlataformRepository, "Uses", "");
-            SeachProductSystem.Uses(ProductPlataformRepository, "Uses", "");
+            SeachOrderSystem.Uses(aplicationServer, "Uses");
+            SeachOrderSystem.Uses(OrderPlataformRepository, "Uses", "");
+            SeachOrderSystem.Uses(OrderPlataformRepository, "Uses", "");
 
-            aplicationServer.Uses(ProductPlataformRepository, "Uses", "");
+            aplicationServer.Uses(OrderPlataformRepository, "Uses", "");
             aplicationServer.Uses(gpsSystem, "Uses", "");
 
 
-            ProductPlataformRepository.Uses(database, "", "");
+            OrderPlataformRepository.Uses(database, "", "");
 
-            productController.Uses(SeachProductSystem, "", "JSON/HTTPS");
+            productController.Uses(SeachOrderSystem, "", "JSON/HTTPS");
             productController.Uses(embeddebValue, "", "JSON/HTTPS");
-            productController.Uses(OrderProduct, "", "JSON/HTTPS");
+            productController.Uses(OrderOrder, "", "JSON/HTTPS");
 
-            embeddebValue.Uses(ProductPlataformRepository, "", "");
+            embeddebValue.Uses(OrderPlataformRepository, "", "");
 
-            OrderProduct.Uses(ProductPlataformRepository, "", "");
+            OrderOrder.Uses(OrderPlataformRepository, "", "");
             // Tags
 
-            SeachProductSystem.AddTags("SeachProductSystem");
-            ProductPlataformRepository.AddTags("ProductPlataformRepository");
+            SeachOrderSystem.AddTags("SeachOrderSystem");
+            OrderPlataformRepository.AddTags("OrderPlataformRepository");
             productController.AddTags("productController");
             aplicationServer.AddTags("aplicationServer");
             embeddebValue.AddTags("EmbeddedValue");
-            OrderProduct.AddTags("OrderProduct");
+            OrderOrder.AddTags("OrderOrder");
 
 
 
             styles.Add(new ElementStyle("productController") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("SeachProductSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("ProductPlataformRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("SeachOrderSystem") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("OrderPlataformRepository") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("aplicationServer") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
             styles.Add(new ElementStyle("EmbeddedValue") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
-            styles.Add(new ElementStyle("OrderProduct") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
+            styles.Add(new ElementStyle("OrderOrder") { Shape = Shape.Component, Background = "#facc2e", Icon = "" });
 
 
-            ComponentView componentView1 = viewSet.CreateComponentView(ProductsContext, "Components1", "Component Diagram1");
+            ComponentView componentView1 = viewSet.CreateComponentView(OrdersContext, "Components1", "Component Diagram1");
 
             componentView1.PaperSize = PaperSize.A4_Landscape;
             componentView1.Add(webApplication);

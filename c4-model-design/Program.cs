@@ -16,11 +16,14 @@ namespace MIAM_C4_Model
             // Crear el workspace
             Workspace workspace = new Workspace("MIAM - C4 Model", "Smart IoT Monitoring System for elderly patients.");
 
-            // Configurar el modelo
-            ModelSetup.ConfigureModel(workspace.Model);
+            // Variables para almacenar referencias de nodos de despliegue
+            DeploymentNode webServer, apiServer, dbServerPrimary, dbServerSecondary, userBrowser, iotDevice, mobileDevice;
 
-            // Configurar las vistas
-            ViewSetup.ConfigureViews(workspace);
+            // Configurar el modelo y obtener las referencias de nodos de despliegue
+            ModelSetup.ConfigureModel(workspace.Model, out webServer, out apiServer, out dbServerPrimary, out dbServerSecondary, out userBrowser, out iotDevice, out mobileDevice);
+
+            // Configurar las vistas pasando las referencias de nodos de despliegue
+            ViewSetup.ConfigureViews(workspace, webServer, apiServer, dbServerPrimary, dbServerSecondary, userBrowser, iotDevice, mobileDevice);
 
             // Subir el workspace a Structurizr
             structurizrClient.UnlockWorkspace(workspaceId);
